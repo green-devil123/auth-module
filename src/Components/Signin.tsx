@@ -1,11 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { signIn } from '../services/api';
+import { SigninForm } from '../interface/types';
 
-interface SigninForm {
-  email: string;
-  password: string;
-}
 
 const Signin: React.FC = () => {
   const [formData, setFormData] = useState<SigninForm>({ email: '', password: '' });
@@ -28,7 +25,7 @@ const Signin: React.FC = () => {
     e.preventDefault();
     try {
       console.log("call")
-      const response = await axios.post('http://localhost:5000/auth/signin', formData);
+      const response = await signIn(formData);
       console.log(response);
       if (response?.status) {
         setFormData({ email: '', password: '' });

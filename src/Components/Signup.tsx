@@ -1,12 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-interface SignupForm {
-  email: string;
-  name: string;
-  password: string;
-}
+import { signUp } from '../services/api';
+import { SignupForm } from '../interface/types';
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState<SignupForm>({ email: '', name: '', password: '' });
@@ -28,7 +23,9 @@ const Signup: React.FC = () => {
     e.preventDefault();
     console.log(formData)
     try {
-      const response = await axios.post('http://localhost:5000/auth/signup', formData);
+      // const response = await signUp(formData);
+      const response = await signUp(formData);
+
       if (response?.status) {
         setFormData({ email: '', name: '', password: '' });
         navigate('/application');
