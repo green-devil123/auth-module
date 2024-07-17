@@ -2,6 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from '../services/api';
 import { SigninForm } from '../interface/types';
+import Notification from './Notification';
 
 
 const Signin: React.FC = () => {
@@ -9,6 +10,18 @@ const Signin: React.FC = () => {
   const [isValidPassword, setIsValidPassword] = useState(true);
 
   const navigate = useNavigate();
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  } | null>(null);
+
+  const showNotification = (msg:string, msgType:any) => {
+    setNotification({ message: msg, type: msgType });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); // Auto close after 3 seconds
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,14 +37,16 @@ const Signin: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      console.log("call")
+      console.log("call");
       const response = await signIn(formData);
       console.log(response);
       if (response?.status) {
+        showNotification("Successfull","success");
         setFormData({ email: '', password: '' });
         navigate('/application');
       }
     } catch (error) {
+      showNotification("Invalid credentials","error");
       console.error('Error signing in:', error);
     }
   };
@@ -69,6 +84,13 @@ const Signin: React.FC = () => {
           <button type="submit" className="w-full py-2 text-white bg-blue-600 rounded-3xl hover:bg-blue-700">Sign In</button>
         </form>
         <p className="text-center text-sm text-gray-600 mt-4">Don't have an account? <a href="/signup" className="text-blue-600 hover:underline">Sign Up</a></p>
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
       </div>
     </div>
   );

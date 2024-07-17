@@ -2,11 +2,24 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signUp } from '../services/api';
 import { SignupForm } from '../interface/types';
+import Notification from './Notification';
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState<SignupForm>({ email: '', name: '', password: '' });
   const [isValidPassword, setIsValidPassword] = useState(true);
   const navigate = useNavigate();
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info' | 'warning';
+  } | null>(null);
+
+  const showNotification = (msg:string, msgType:any) => {
+    setNotification({ message: msg, type: msgType });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000); // Auto close after 3 seconds
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,11 +39,13 @@ const Signup: React.FC = () => {
       const response = await signUp(formData);
 
       if (response?.status) {
+        showNotification("Successfull","success");
         setFormData({ email: '', name: '', password: '' });
         navigate('/application');
         console.log('Signup successful!');
       }
     } catch (error) {
+      showNotification("Invalid credentials","error");
       console.error('Error signing up:', error);
       // Display an error message to the user
     }
@@ -80,6 +95,13 @@ const Signup: React.FC = () => {
           <button type="submit" className="w-full py-2 text-white bg-blue-600 rounded hover:bg-blue-700">Sign Up</button>
           <p className="text-center text-sm text-gray-600 mt-4">Already have an account <a href="/" className="text-blue-600 hover:underline">Sign In</a></p>
         </form>
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={() => setNotification(null)}
+          />
+        )}
       </div>
     </div>
   );
