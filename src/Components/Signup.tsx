@@ -21,7 +21,6 @@ const Signup: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(formData)
     try {
       // const response = await signUp(formData);
       const response = await signUp(formData);
